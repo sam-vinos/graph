@@ -12,4 +12,14 @@ typedef struct token_t {
 } Token;
 
 
+
+typedef struct stack_t {
+	Token data;
+	struct stack_t *pointer;
+} Stack;
+
+void pusch(Token data);
+Token pop(void);
+
+
 #endif
