@@ -7,7 +7,7 @@
 
 /*
 
-enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS, VOID};
+enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS, UNDEFINED_TYPE};
 typedef struct token_t {
 	union data {
 		unsigned char s;
@@ -23,19 +23,29 @@ typedef struct token_t {
 
 static unsigned char *__input(void);
 static char __data_correctness(const Token *arr_tokens);
+static unsigned __is_token(const unsigned char *string, unsigned ind);
 
 
 Token *
 get_tokens(void)
 {
-	// const unsigned char allowed_charaters[] = "1234567890-+*/^()sincos\t ";
+	//const unsigned char allowed_charaters[] = "1234567890-+*/^()sincos\t ";
 	unsigned char *string = __input();
 #define MIN_LEN_ARR_TOKENS 10
 	unsigned len_arr_tokens = MIN_LEN_ARR_TOKENS;
 	Token *arr_tokens = (Token *)calloc(MIN_LEN_ARR_TOKENS, sizeof(Token));
 	if (!arr_tokens) goto ERROR_GET_TOKENS;
 
-	// заполнение массива
+	unsigned ind_tokens = 0;
+	for (unsigned ind = 0; string[ind]; ind_tokens++) {
+		if (ind_tokens == len_arr_tokens) {
+			len_arr_tokens += MIN_LEN_ARR_TOKENS;
+			arr_tokens = (Token *)realloc(arr_tokens, sizeof(Token) * len_arr_tokens);
+			if (!arr_tokens) goto ERROR_GET_TOKENS;
+		}
+		ind += __is_token(string, ind);
+		if (arr_tokens[ind_tokens].type == UNDEFINED_TYPE) goto ERROR_GET_TOKENS;
+	}
 
 	free(string);//!!!
 	if (__data_correctness(arr_tokens)) {
@@ -73,6 +83,13 @@ __input(void)
 	}
 	res[counter] = 0;
 	return res;
+}
+
+
+static unsigned
+__is_token(const unsigned char *string, unsigned ind)
+{
+	return 1;
 }
 
 
