@@ -1,7 +1,16 @@
 CC=gcc
-FLAGS=-Wall -Wextra -Werror
-CLEAN=rm -f
-NAME=graph
+FLAGS=-Wall -Wextra -std=c99
 
-SOURCE=$(NAME).c
-BIN=$(NAME)
+GET_TOKENS=get_tokens
+SOURCE_GET_TOKENS=$(GET_TOKENS).c
+OBG_GET_TOKENS=$(GET_TOKENS)#.o
+
+CLEAN=rm -f
+CLEAN_LIST=$(OBG_GET_TOKENS)
+
+
+$(OBG_GET_TOKENS): $(SOURCE_GET_TOKENS)
+	$(CC) $(FLAGS) $^ -o $@ #$(CC) $(FLAGS) -c $^
+
+clean:
+	$(CLEAN) $(CLEAN_LIST)
