@@ -23,14 +23,19 @@ typedef struct token_t {
 
 static unsigned char *__input(void);
 static char __data_correctness(const Token *arr_tokens);
-static unsigned __is_token(const unsigned char *string, unsigned ind);
+static unsigned __is_token(unsigned ind);
+
+static  unsigned char *string;
+/*
+static Token *arr_tokens;
+*/
 
 
 Token *
 get_tokens(void)
 {
 	//const unsigned char allowed_charaters[] = "1234567890-+*/^()sincos\t ";
-	unsigned char *string = __input();
+	string = __input();
 #define MIN_LEN_ARR_TOKENS 10
 	unsigned len_arr_tokens = MIN_LEN_ARR_TOKENS;
 	Token *arr_tokens = (Token *)calloc(MIN_LEN_ARR_TOKENS, sizeof(Token));
@@ -43,7 +48,7 @@ get_tokens(void)
 			arr_tokens = (Token *)realloc(arr_tokens, sizeof(Token) * len_arr_tokens);
 			if (!arr_tokens) goto ERROR_GET_TOKENS;
 		}
-		ind += __is_token(string, ind);
+		ind += __is_token(ind);
 		if (arr_tokens[ind_tokens].type == UNDEFINED_TYPE) goto ERROR_GET_TOKENS;
 	}
 
@@ -51,7 +56,7 @@ get_tokens(void)
 	if (__data_correctness(arr_tokens)) {
 		ERROR_GET_TOKENS:
 		free(arr_tokens);
-		return NULL;
+		arr_tokens = NULL;
 	}
 	return arr_tokens;
 }
@@ -63,32 +68,36 @@ static unsigned char *
 __input(void)
 {
 #define MIN_SIZE_STRING 10
-	unsigned char *res = (unsigned char *)calloc(MIN_SIZE_STRING, sizeof(char));
-	if (!res) goto ERROR_INPUT;
+	string = (unsigned char *)calloc(MIN_SIZE_STRING, sizeof(char));
+	if (!string) goto ERROR_INPUT;
 	unsigned counter = 0;
 	unsigned len = MIN_SIZE_STRING;
 	for (unsigned char s = 0; (s = getchar()) != '\n';) {
-		res[counter++] = s;
+		string[counter++] = s;
 		if (counter == len) {
 			len += MIN_SIZE_STRING;
-			res = (unsigned char *)realloc(res, len * sizeof(char));
-			if (!res) goto ERROR_INPUT;
+			string = (unsigned char *)realloc(string, len * sizeof(char));
+			if (!string) goto ERROR_INPUT;
 		}
 	}
-	res = (unsigned char *)realloc(res, (counter + 1) * sizeof(char));
-	if (!res) {
+	string = (unsigned char *)realloc(string, (counter + 1) * sizeof(char));
+	if (!string) {
 		ERROR_INPUT:
-		free(res);
-		return NULL;
-	}
-	res[counter] = 0;
-	return res;
+		free(string);
+		string = NULL;
+	} else string[counter] = 0;
+	return string;
 }
 
 
 static unsigned
-__is_token(const unsigned char *string, unsigned ind)
+__is_token(unsigned ind)
 {
+	unsigned char symbol = string[ind];
+	unsigned offset = 0;
+	if ((symbol >= '0' && symbol <= '9') || (symbol == '-' && )) {
+	} else {
+	}
 	return 1;
 }
 
