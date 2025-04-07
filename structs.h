@@ -2,10 +2,10 @@
 #define STRUCTS
 
 
-enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS};
+enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS, UNDEFINED_TYPE};
 typedef struct token_t {
 	union {
-		unsigned char s;
+		unsigned char symbol;
 		signed number_int;
 		float number_float;
 		unsigned char *str;
