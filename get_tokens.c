@@ -21,39 +21,45 @@ typedef struct token_t {
 */
 
 
-static unsigned char *__input(void);
-static char __data_correctness(const Token *arr_tokens);
+static void __input(void);
+static char __data_correctness(void);
 static unsigned __is_token(unsigned ind);
 
 static  unsigned char *string;
-/*
 static Token *arr_tokens;
-*/
 
 
 Token *
 get_tokens(void)
 {
-	//const unsigned char allowed_charaters[] = "1234567890-+*/^()sincos\t ";
-	string = __input();
+	__input();
 #define MIN_LEN_ARR_TOKENS 10
 	unsigned len_arr_tokens = MIN_LEN_ARR_TOKENS;
-	Token *arr_tokens = (Token *)calloc(MIN_LEN_ARR_TOKENS, sizeof(Token));
-	if (!arr_tokens) goto ERROR_GET_TOKENS;
+	arr_tokens = (Token *)calloc(MIN_LEN_ARR_TOKENS, sizeof(Token));
+	if (!arr_tokens) {
+		free(string);
+		goto ERROR_GET_TOKENS;
+	}
 
 	unsigned ind_tokens = 0;
 	for (unsigned ind = 0; string[ind]; ind_tokens++) {
 		if (ind_tokens == len_arr_tokens) {
 			len_arr_tokens += MIN_LEN_ARR_TOKENS;
 			arr_tokens = (Token *)realloc(arr_tokens, sizeof(Token) * len_arr_tokens);
-			if (!arr_tokens) goto ERROR_GET_TOKENS;
+			if (!arr_tokens) {
+				free(string);
+				goto ERROR_GET_TOKENS;
+			}
 		}
 		ind += __is_token(ind);
-		if (arr_tokens[ind_tokens].type == UNDEFINED_TYPE) goto ERROR_GET_TOKENS;
+		if (arr_tokens[ind_tokens].type == UNDEFINED_TYPE) {
+			free(string);
+			goto ERROR_GET_TOKENS;
+		}
 	}
 
-	free(string);//!!!
-	if (__data_correctness(arr_tokens)) {
+	free(string);
+	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
 		free(arr_tokens);
 		arr_tokens = NULL;
@@ -64,7 +70,7 @@ get_tokens(void)
 
 
 
-static unsigned char *
+static void
 __input(void)
 {
 #define MIN_SIZE_STRING 10
@@ -93,17 +99,18 @@ __input(void)
 static unsigned
 __is_token(unsigned ind)
 {
+	//const unsigned char allowed_charaters[] = "1234567890-+*/^()sincos\t ";
 	unsigned char symbol = string[ind];
 	unsigned offset = 0;
-	if ((symbol >= '0' && symbol <= '9') || (symbol == '-' && )) {
+	/*if ((symbol >= '0' && symbol <= '9') || (symbol == '-' && )) {
 	} else {
-	}
+	}*/
 	return 1;
 }
 
 
 static char
-__data_correctness(const Token *arr_tokens)
+__data_correctness(void)
 {
 	fprintf(stdin, "%p", arr_tokens);
 	return 1;
@@ -113,7 +120,7 @@ __data_correctness(const Token *arr_tokens)
 int
 main()
 {
-	unsigned char *string = __input();
+	__input();
 	printf("%s\nlen = %ld\n", string, strlen((char *)string));
 	return 0;
 }
