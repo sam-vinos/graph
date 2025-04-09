@@ -114,7 +114,6 @@ __input(void)
 
 #define IS_FUNC(s) ((s >= 'a' && s <= 'z') || (s >= 'A' && s <= 'Z') || s == '_')
 #define IS_SIGN(s) (s == '-' || s == '+' || s == '*' || s == '/' || s == '^')
-//#define IS_BLACKETS(s) (s == '(' || s == ')')
 #define IS_OPENING_BLACKET(s) (s == '(')
 #define IS_CLOSING_BLACKET(s) (s == ')')
 #define IS_NUMBER(s) (s >= '0' && s <= '9')
@@ -147,16 +146,17 @@ __is_token(unsigned ind, unsigned ind_token)
 	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
 
 
-		offset = 0;
+		//offset = 0;
 		unsigned char t_symbol = 0;
 		unsigned ind_end = ind + 1;
 		char int_or_float = 1;
-		for (; IS_NUMBER(string[ind_end]) || string[ind_end] == '.'; ind_end++) {
+		for (; IS_NUMBER(string[ind_end]) || string[ind_end] == '.'; ind_end++, offset++) {
 			if (string[ind_end] == '.') int_or_float = 0;
 		}
 		t_symbol = string[ind_end];
 		string[ind_end] = '\0';
 
+		/*
 		arr_tokens[ind_token].data.str = (unsigned char *)calloc(ind_end - ind, sizeof(unsigned char));
 		if (!arr_tokens[ind_token].data.str) goto ERROR_IS_TOKEN;
 
@@ -165,15 +165,20 @@ __is_token(unsigned ind, unsigned ind_token)
 		}
 
 		arr_tokens[ind_token].data.str[offset] = '\0';
-		string[ind_end] = t_symbol;
+		*/
+		//string[ind_end] = t_symbol;
 
 		if (int_or_float) {
 			puts("\tIS_NUMBER");
 			arr_tokens[ind_token].type = NUMBER;
+			arr_tokens[ind_token].data.number_int = atoi((char *)&string[ind]);
 		} else {
 			puts("\tIS_NUMBER_FLOAT");
 			arr_tokens[ind_token].type = NUMBER_FLOAT;
+			arr_tokens[ind_token].data.number_float = atof((char *)&string[ind]);
 		}
+		string[ind_end] = t_symbol;
+		
 	} else if (IS_SIGN(symbol)) {
 
 		puts("\tIS_SIGN");
@@ -231,10 +236,10 @@ print_arr_tokens(Token *arr_tokens)
 	for (unsigned ind = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
 			case NUMBER:
-				printf("NUMBER\t\t\t%s\n", arr_tokens[ind].data.str);
+				printf("NUMBER_INT\t\t%d\n", arr_tokens[ind].data.number_int);
 				break;
 			case NUMBER_FLOAT:
-				printf("NUMBER_FLOAT\t\t%s\n", arr_tokens[ind].data.str);
+				printf("NUMBER_FLOAT\t\t%f\n", arr_tokens[ind].data.number_float);
 				break;
 			case SIGN:
 				printf("SIGN\t\t\t%c\n", arr_tokens[ind].data.symbol);
