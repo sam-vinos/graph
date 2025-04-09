@@ -16,13 +16,13 @@ enum type_token {
 	END_ARR_TOKENS
 };
 typedef struct token_t {
+	char type;
 	union {
 		unsigned char symbol;
 		signed number_int;
 		float number_float;
 		unsigned char *str;
 	} data;
-	char type;
 } Token;
 
 

@@ -1,16 +1,27 @@
 CC=gcc
 FLAGS=-Wall -Wextra -std=c99
 
+#get_tokens.c
 GET_TOKENS=get_tokens
 SOURCE_GET_TOKENS=$(GET_TOKENS).c
-OBG_GET_TOKENS=$(GET_TOKENS)#.o
+OBG_GET_TOKENS=$(GET_TOKENS).o
+TEST_GET_TOKENS=test_$(GET_TOKENS)
 
 CLEAN=rm -f
-CLEAN_LIST=$(OBG_GET_TOKENS)
+CLEAN_LIST=$(OBG_GET_TOKENS) $(TEST_GET_TOKENS)
+
+all: $(TEST_GET_TOKENS)
 
 
 $(OBG_GET_TOKENS): $(SOURCE_GET_TOKENS)
-	$(CC) $(FLAGS) $^ -o $@ #$(CC) $(FLAGS) -c $^
+	$(CC) $(FLAGS) -c $^
 
 clean:
 	$(CLEAN) $(CLEAN_LIST)
+
+
+
+
+#tests
+$(TEST_GET_TOKENS): $(SOURCE_GET_TOKENS)
+	$(CC) $(FLAGS) -DTEST $^ -o $@

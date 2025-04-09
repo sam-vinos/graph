@@ -2,14 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#include "get_tokens.h"
+#include "get_tokens.h"
 #include "structs.h"
 
-// ВАЖНО!!!! такой ввод проппустит: si n; потомучто __preproces объфдинит в одну строку
-// BLACKETS
+
 
 /*
-
 enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS};
 typedef struct token_t {
 	union data {
@@ -20,10 +18,9 @@ typedef struct token_t {
 	};
 	char type;
 } Token;
-
 */
 
-//#define LIST_FUNC_STRING "sin cos tng ctng"
+#define LIST_FUNC_STRING "sin cos tng ctng"
 
 static void __input(void);
 static char __data_correctness(void);
@@ -34,18 +31,17 @@ static  unsigned char *string;
 static Token *arr_tokens;
 
 
+#define MIN_LEN_ARR_TOKENS 10
 Token *
 get_tokens(void)
 {
 	__input();
-#define MIN_LEN_ARR_TOKENS 10
 	unsigned len_arr_tokens = MIN_LEN_ARR_TOKENS;
 	arr_tokens = (Token *)calloc(len_arr_tokens, sizeof(Token));
 	if (!arr_tokens || !string || __preproces()) {
 		free(string);
 		goto ERROR_GET_TOKENS;
 	}
-
 	unsigned ind_token = 0;
 	for (unsigned ind = 0; string[ind]; ind_token++) {
 		if (ind_token == len_arr_tokens) {
@@ -61,7 +57,9 @@ get_tokens(void)
 			free(string);
 			goto ERROR_GET_TOKENS;
 		}
+#ifdef TEST
 		printf("\nind = %u\nsymbol = |%c| ascii number symbol = %d\n\n", ind, string[ind], (int)string[ind]);
+#endif
 	}
 	
 	if (ind_token == len_arr_tokens) {
@@ -74,23 +72,23 @@ get_tokens(void)
 	}
 	arr_tokens[ind_token].type = END_ARR_TOKENS;
 	arr_tokens[ind_token].data.str = NULL;
-
 	free(string);
 	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
 		free(arr_tokens);
 		arr_tokens = NULL;
-
+#ifdef TEST
 		puts("ERROR");
+#endif
 	}
 	return arr_tokens;
 }
 
 
+#define MIN_SIZE_STRING 10
 static void
 __input(void)
 {
-#define MIN_SIZE_STRING 10
 	string = (unsigned char *)calloc(MIN_SIZE_STRING, sizeof(char));
 	if (!string) goto ERROR_INPUT;
 	unsigned counter = 0;
@@ -112,7 +110,7 @@ __input(void)
 }
 
 
-#define IS_FUNC(s) ((s >= 'a' && s <= 'z') || (s >= 'A' && s <= 'Z') || s == '_')
+#define IS_ALPHA(s) ((s >= 'a' && s <= 'z') || (s >= 'A' && s <= 'Z') || s == '_')
 #define IS_SIGN(s) (s == '-' || s == '+' || s == '*' || s == '/' || s == '^')
 #define IS_OPENING_BLACKET(s) (s == '(')
 #define IS_CLOSING_BLACKET(s) (s == ')')
@@ -125,7 +123,7 @@ __preproces(void)
 	for (; string[ind]; ind++) {
 		string[ind - offset] = string[ind];
 		if (string[ind] == ' ' || string[ind] == '\t') offset++;
-		if (!IS_FUNC(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
+		if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
 					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])
 					&& !IS_NUMBER(string[ind]) && string[ind] != '.') { // '.' - для натуральных
 			return 1;
@@ -144,9 +142,6 @@ __is_token(unsigned ind, unsigned ind_token)
 	unsigned offset = 1;
 	char symbol = string[ind];
 	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
-
-
-		//offset = 0;
 		unsigned char t_symbol = 0;
 		unsigned ind_end = ind + 1;
 		char int_or_float = 1;
@@ -155,54 +150,45 @@ __is_token(unsigned ind, unsigned ind_token)
 		}
 		t_symbol = string[ind_end];
 		string[ind_end] = '\0';
-
-		/*
-		arr_tokens[ind_token].data.str = (unsigned char *)calloc(ind_end - ind, sizeof(unsigned char));
-		if (!arr_tokens[ind_token].data.str) goto ERROR_IS_TOKEN;
-
-		for (unsigned ind_start = ind; ind_start != ind_end; ind_start++) {
-			arr_tokens[ind_token].data.str[offset++] = string[ind_start];
-		}
-
-		arr_tokens[ind_token].data.str[offset] = '\0';
-		*/
-		//string[ind_end] = t_symbol;
-
 		if (int_or_float) {
+#ifdef TEST
 			puts("\tIS_NUMBER");
+#endif
 			arr_tokens[ind_token].type = NUMBER;
 			arr_tokens[ind_token].data.number_int = atoi((char *)&string[ind]);
 		} else {
+#ifdef TEST
 			puts("\tIS_NUMBER_FLOAT");
+#endif
 			arr_tokens[ind_token].type = NUMBER_FLOAT;
 			arr_tokens[ind_token].data.number_float = atof((char *)&string[ind]);
 		}
 		string[ind_end] = t_symbol;
 		
 	} else if (IS_SIGN(symbol)) {
-
+#ifdef TEST
 		puts("\tIS_SIGN");
-
+#endif
 		arr_tokens[ind_token].type = SIGN;
 		arr_tokens[ind_token].data.symbol = symbol;
 	} else if (IS_OPENING_BLACKET(symbol)) {
-
+#ifdef TEST
 		puts("\tIS_OPENING_BLACKET");
-
+#endif
 		arr_tokens[ind_token].type = OPENING_BLACKET;
 		arr_tokens[ind_token].data.symbol = symbol;
 	} else if (IS_CLOSING_BLACKET(symbol)) {
-		
+#ifdef TEST		
 		puts("\tIS_CLOSING_BLACKET");
-
+#endif
 		arr_tokens[ind_token].type = CLOSING_BLACKET;
 		arr_tokens[ind_token].data.symbol = symbol;
-	} else if (IS_FUNC(symbol)) {
-
+	} else if (IS_ALPHA(symbol)) {
+#ifdef TEST
 		puts("\tIS_FUNC");
-
+#endif
 		unsigned ind_end = ind + 1;
-		for (; IS_FUNC(string[ind_end]) || IS_NUMBER(string[ind_end]); ind_end++, offset++);
+		for (; IS_ALPHA(string[ind_end]) || IS_NUMBER(string[ind_end]); ind_end++, offset++);
 		arr_tokens[ind_token].type = FUNC;
 		arr_tokens[ind_token].data.str = (unsigned char *)calloc(offset, sizeof(unsigned char));
 		if (!(arr_tokens[ind_token].data.str)) goto ERROR_IS_TOKEN;
@@ -210,22 +196,27 @@ __is_token(unsigned ind, unsigned ind_token)
 			arr_tokens[ind_token].data.str[ind_start - ind] = string[ind_start];
 		arr_tokens[ind_token].data.str[offset] = '\0';
 	} else {
-
+#ifdef TEST
 		puts("\tERROR_IS_TOKEN");
-
+#endif
 		ERROR_IS_TOKEN:
 		arr_tokens[ind_token].type = UNDEFINED_TYPE;
 		arr_tokens[ind_token].data.str = NULL;
 	}
-	return offset + ind; // возвращаем значение которое индекс должен принять после этой функции
+	return offset + ind;
 }
 
 
 static char
 __data_correctness(void)
 {
-	//fprintf(stdin, "%p", arr_tokens);
 	return 0;
+}
+
+
+void
+free_arr_tokens(Token *arr_tokens, unsigned ind_end)
+{
 }
 
 
@@ -261,6 +252,7 @@ print_arr_tokens(Token *arr_tokens)
 }
 
 
+#ifdef TEST
 int
 main()
 {
@@ -273,3 +265,4 @@ main()
 	print_arr_tokens(arr_tokens);
 	return 0;
 }
+#endif
