@@ -5,6 +5,7 @@
 
 Token *get_tokens(void);
 void print_arr_tokens(Token *arr_tokens);
-void free_arr_tokens(Token *arr_tokens, unsigned ind_end);
+void _free_arr_tokens(Token *arr_tokens, unsigned ind_end);
+#define free_arr_tokens(arr_tokens) _free_arr_tokens(arr_tokens, 0)
 
 #endif

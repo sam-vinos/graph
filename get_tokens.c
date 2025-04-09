@@ -20,7 +20,6 @@ typedef struct token_t {
 } Token;
 */
 
-#define LIST_FUNC_STRING "sin cos tng ctng"
 
 static void __input(void);
 static char __data_correctness(void);
@@ -38,11 +37,11 @@ get_tokens(void)
 	__input();
 	unsigned len_arr_tokens = MIN_LEN_ARR_TOKENS;
 	arr_tokens = (Token *)calloc(len_arr_tokens, sizeof(Token));
+	unsigned ind_token = 0;
 	if (!arr_tokens || !string || __preproces()) {
 		free(string);
 		goto ERROR_GET_TOKENS;
 	}
-	unsigned ind_token = 0;
 	for (unsigned ind = 0; string[ind]; ind_token++) {
 		if (ind_token == len_arr_tokens) {
 			len_arr_tokens += MIN_LEN_ARR_TOKENS;
@@ -61,7 +60,6 @@ get_tokens(void)
 		printf("\nind = %u\nsymbol = |%c| ascii number symbol = %d\n\n", ind, string[ind], (int)string[ind]);
 #endif
 	}
-	
 	if (ind_token == len_arr_tokens) {
 		len_arr_tokens += MIN_LEN_ARR_TOKENS;
 		arr_tokens = (Token *)realloc(arr_tokens, sizeof(Token) * len_arr_tokens);
@@ -75,7 +73,8 @@ get_tokens(void)
 	free(string);
 	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
-		free(arr_tokens);
+		//free(arr_tokens);
+		_free_arr_tokens(arr_tokens, ind_token);
 		arr_tokens = NULL;
 #ifdef TEST
 		puts("ERROR");
@@ -210,13 +209,36 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void)
 {
+	static const unsigned char arr_list_string[] = "sin cos s";
+	for (unsigned ind = 0, ind_func = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+		if (arr_tokens[ind].type == FUNC) {
+			/*
+			for (ind_func = 0; arr_list_string[ind_func] != ' ' && arr_list_string[ind_func] &&\
+					arr_tokens[ind].data.str[ind_func] &&\
+					arr_tokens[ind].data.str[ind_func] == arr_list_string[ind_func];
+					ind_func++);
+			if (!((arr_list_string[ind_func] == ' ' || !arr_list_string[ind_func]) &&\
+						!arr_tokens[ind].data.str[ind_func]))
+				return 1;
+			*/
+			for (ind_start = 0; ; ) {
+			}
+		}
+	}
 	return 0;
 }
 
 
 void
-free_arr_tokens(Token *arr_tokens, unsigned ind_end)
+_free_arr_tokens(Token *arr_tokens, unsigned ind_end)
 {
+	if (!ind_end) return;
+	for (unsigned ind = 0; (ind_end && ind != ind_end) || (arr_tokens[ind].type != END_ARR_TOKENS); ind++) {
+		if (arr_tokens[ind].type == FUNC) {
+			free(arr_tokens[ind].data.str);
+		}
+	}
+	free(arr_tokens);
 }
 
 
@@ -263,6 +285,7 @@ main()
 	for (; arr_tokens[len_arr_tokens].type != END_ARR_TOKENS; len_arr_tokens++);
 	printf("len = %u\n", len_arr_tokens);
 	print_arr_tokens(arr_tokens);
+	_free_arr_tokens(arr_tokens, len_arr_tokens);
 	return 0;
 }
 #endif
