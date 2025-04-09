@@ -211,6 +211,19 @@ __data_correctness(void)
 }
 
 
+void
+print_arr_tokens(Token *arr_tokens)
+{
+	for (unsigned ind = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+		switch (arr_tokens[ind].type) {
+			case NUMBER:
+			case NUMBER_FLOAT:
+				break;
+		}
+	}
+}
+
+
 int
 main()
 {
