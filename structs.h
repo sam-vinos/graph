@@ -7,7 +7,10 @@ enum type_token {
 	NUMBER,
 	NUMBER_FLOAT,
 	FUNC,
-	BLACKETS,
+	//BLACKETS,
+	OPENING_BLACKET,
+	CLOSING_BLACKET,
+	
 
 	UNDEFINED_TYPE,
 	END_ARR_TOKENS
@@ -28,10 +31,10 @@ typedef struct stack_t {
 	Token data;
 	struct stack_t *pointer;
 } Stack;
-*/
+
 
 void pusch(Token *data);
 Token *pop(void);
-
+*/
 
 #endif

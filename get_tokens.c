@@ -5,10 +5,12 @@
 //#include "get_tokens.h"
 #include "structs.h"
 
+// ВАЖНО!!!! такой ввод проппустит: si n; потомучто __preproces объфдинит в одну строку
+// BLACKETS
 
 /*
 
-enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS, UNDEFINED_TYPE};
+enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS};
 typedef struct token_t {
 	union data {
 		unsigned char symbol;
@@ -110,10 +112,11 @@ __input(void)
 }
 
 
-//#define VALID_CHARACTERS "1234567890-+*/^()"
 #define IS_FUNC(s) ((s >= 'a' && s <= 'z') || (s >= 'A' && s <= 'Z') || s == '_')
 #define IS_SIGN(s) (s == '-' || s == '+' || s == '*' || s == '/' || s == '^')
-#define IS_BLACKETS(s) (s == '(' || s == ')')
+//#define IS_BLACKETS(s) (s == '(' || s == ')')
+#define IS_OPENING_BLACKET(s) (s == '(')
+#define IS_CLOSING_BLACKET(s) (s == ')')
 #define IS_NUMBER(s) (s >= '0' && s <= '9')
 #define IS_SEPARATOR(s) (s == ' ' || s == '\t')
 static char
@@ -124,8 +127,8 @@ __preproces(void)
 		string[ind - offset] = string[ind];
 		if (string[ind] == ' ' || string[ind] == '\t') offset++;
 		if (!IS_FUNC(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
-					!IS_BLACKETS(string[ind]) && !IS_NUMBER(string[ind]) &&\
-					string[ind] != '.') { // '.' - для натуральных чисел
+					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])
+					&& !IS_NUMBER(string[ind]) && string[ind] != '.') { // '.' - для натуральных
 			return 1;
 		}
 	}
@@ -135,7 +138,7 @@ __preproces(void)
 
 
 #define IS_NEGATIVE_NUMBER(ind, arr) (!ind || (arr[ind - 1].type == SIGN ||\
-			(arr[ind - 1].type == BLACKETS && arr[ind - 1].data.symbol == '(')))
+			(arr[ind - 1].type == OPENING_BLACKET)))
 static unsigned
 __is_token(unsigned ind, unsigned ind_token)
 {
@@ -143,7 +146,6 @@ __is_token(unsigned ind, unsigned ind_token)
 	char symbol = string[ind];
 	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
 
-		puts("\tIS_NUMBER");
 
 		offset = 0;
 		unsigned char t_symbol = 0;
@@ -165,19 +167,30 @@ __is_token(unsigned ind, unsigned ind_token)
 		arr_tokens[ind_token].data.str[offset] = '\0';
 		string[ind_end] = t_symbol;
 
-		if (int_or_float) arr_tokens[ind_token].type = NUMBER;
-		else arr_tokens[ind_token].type = NUMBER_FLOAT;
+		if (int_or_float) {
+			puts("\tIS_NUMBER");
+			arr_tokens[ind_token].type = NUMBER;
+		} else {
+			puts("\tIS_NUMBER_FLOAT");
+			arr_tokens[ind_token].type = NUMBER_FLOAT;
+		}
 	} else if (IS_SIGN(symbol)) {
 
 		puts("\tIS_SIGN");
 
 		arr_tokens[ind_token].type = SIGN;
 		arr_tokens[ind_token].data.symbol = symbol;
-	} else if (IS_BLACKETS(symbol)) {
+	} else if (IS_OPENING_BLACKET(symbol)) {
 
-		puts("\tIS_BLACKETS");
+		puts("\tIS_OPENING_BLACKET");
 
-		arr_tokens[ind_token].type = BLACKETS;
+		arr_tokens[ind_token].type = OPENING_BLACKET;
+		arr_tokens[ind_token].data.symbol = symbol;
+	} else if (IS_CLOSING_BLACKET(symbol)) {
+		
+		puts("\tIS_CLOSING_BLACKET");
+
+		arr_tokens[ind_token].type = CLOSING_BLACKET;
 		arr_tokens[ind_token].data.symbol = symbol;
 	} else if (IS_FUNC(symbol)) {
 
@@ -190,7 +203,7 @@ __is_token(unsigned ind, unsigned ind_token)
 		if (!(arr_tokens[ind_token].data.str)) goto ERROR_IS_TOKEN;
 		for (unsigned ind_start = ind; ind_start != ind_end; ind_start++)
 			arr_tokens[ind_token].data.str[ind_start - ind] = string[ind_start];
-		arr_tokens[ind_token].data.str[offset - 1] = '\0';
+		arr_tokens[ind_token].data.str[offset] = '\0';
 	} else {
 
 		puts("\tERROR_IS_TOKEN");
@@ -211,13 +224,32 @@ __data_correctness(void)
 }
 
 
+//enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS};
 void
 print_arr_tokens(Token *arr_tokens)
 {
 	for (unsigned ind = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
 			case NUMBER:
+				printf("NUMBER\t\t\t%s\n", arr_tokens[ind].data.str);
+				break;
 			case NUMBER_FLOAT:
+				printf("NUMBER_FLOAT\t\t%s\n", arr_tokens[ind].data.str);
+				break;
+			case SIGN:
+				printf("SIGN\t\t\t%c\n", arr_tokens[ind].data.symbol);
+				break;
+			case FUNC:
+				printf("FUNC\t\t\t%s\n", arr_tokens[ind].data.str);
+				break;
+			case OPENING_BLACKET:
+				printf("OPENING_BLACKET\t\t%c\n", arr_tokens[ind].data.symbol);
+				break;
+			case CLOSING_BLACKET:
+				printf("CLOSING_BLACKET\t\t%c\n", arr_tokens[ind].data.symbol);
+				break;
+			case UNDEFINED_TYPE:
+				puts("UNDEFINED_TYPE!!!");
 				break;
 		}
 	}
@@ -227,14 +259,12 @@ print_arr_tokens(Token *arr_tokens)
 int
 main()
 {
-	/*__input();
-	__preproces();
-	printf("%s\nlen = %ld\n", string, strlen((char *)string));*/
 	if (!get_tokens()) {
 		return 1;
 	}
 	unsigned len_arr_tokens = 0;
 	for (; arr_tokens[len_arr_tokens].type != END_ARR_TOKENS; len_arr_tokens++);
 	printf("len = %u\n", len_arr_tokens);
+	print_arr_tokens(arr_tokens);
 	return 0;
 }
