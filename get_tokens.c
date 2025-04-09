@@ -55,19 +55,31 @@ get_tokens(void)
 			}
 		}
 		ind = __is_token(ind, ind_token);
-		/*
 		if (arr_tokens[ind_token].type == UNDEFINED_TYPE) {
 			free(string);
 			goto ERROR_GET_TOKENS;
 		}
-		*/
+		printf("\nind = %u\nsymbol = |%c| ascii number symbol = %d\n\n", ind, string[ind], (int)string[ind]);
 	}
+	
+	if (ind_token == len_arr_tokens) {
+		len_arr_tokens += MIN_LEN_ARR_TOKENS;
+		arr_tokens = (Token *)realloc(arr_tokens, sizeof(Token) * len_arr_tokens);
+		if (!arr_tokens) {
+			free(string);
+			goto ERROR_GET_TOKENS;
+		}
+	}
+	arr_tokens[ind_token].type = END_ARR_TOKENS;
+	arr_tokens[ind_token].data.str = NULL;
 
 	free(string);
 	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
 		free(arr_tokens);
 		arr_tokens = NULL;
+
+		puts("ERROR");
 	}
 	return arr_tokens;
 }
@@ -112,7 +124,8 @@ __preproces(void)
 		string[ind - offset] = string[ind];
 		if (string[ind] == ' ' || string[ind] == '\t') offset++;
 		if (!IS_FUNC(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
-					!IS_BLACKETS(string[ind]) && !IS_NUMBER(string[ind])) {
+					!IS_BLACKETS(string[ind]) && !IS_NUMBER(string[ind]) &&\
+					string[ind] != '.') { // '.' - для натуральных чисел
 			return 1;
 		}
 	}
@@ -126,26 +139,63 @@ __preproces(void)
 static unsigned
 __is_token(unsigned ind, unsigned ind_token)
 {
-	unsigned offset = 0;
+	unsigned offset = 1;
 	char symbol = string[ind];
 	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
 
-		//number or number_float
+		puts("\tIS_NUMBER");
 
+		offset = 0;
+		unsigned char t_symbol = 0;
+		unsigned ind_end = ind + 1;
+		char int_or_float = 1;
+		for (; IS_NUMBER(string[ind_end]) || string[ind_end] == '.'; ind_end++) {
+			if (string[ind_end] == '.') int_or_float = 0;
+		}
+		t_symbol = string[ind_end];
+		string[ind_end] = '\0';
+
+		arr_tokens[ind_token].data.str = (unsigned char *)calloc(ind_end - ind, sizeof(unsigned char));
+		if (!arr_tokens[ind_token].data.str) goto ERROR_IS_TOKEN;
+
+		for (unsigned ind_start = ind; ind_start != ind_end; ind_start++) {
+			arr_tokens[ind_token].data.str[offset++] = string[ind_start];
+		}
+
+		arr_tokens[ind_token].data.str[offset] = '\0';
+		string[ind_end] = t_symbol;
+
+		if (int_or_float) arr_tokens[ind_token].type = NUMBER;
+		else arr_tokens[ind_token].type = NUMBER_FLOAT;
 	} else if (IS_SIGN(symbol)) {
+
+		puts("\tIS_SIGN");
+
 		arr_tokens[ind_token].type = SIGN;
 		arr_tokens[ind_token].data.symbol = symbol;
-		offset = 1;
 	} else if (IS_BLACKETS(symbol)) {
+
+		puts("\tIS_BLACKETS");
+
 		arr_tokens[ind_token].type = BLACKETS;
 		arr_tokens[ind_token].data.symbol = symbol;
-		offset = 1;
 	} else if (IS_FUNC(symbol)) {
 
-		//
-		
+		puts("\tIS_FUNC");
+
+		unsigned ind_end = ind + 1;
+		for (; IS_FUNC(string[ind_end]) || IS_NUMBER(string[ind_end]); ind_end++, offset++);
+		arr_tokens[ind_token].type = FUNC;
+		arr_tokens[ind_token].data.str = (unsigned char *)calloc(offset, sizeof(unsigned char));
+		if (!(arr_tokens[ind_token].data.str)) goto ERROR_IS_TOKEN;
+		for (unsigned ind_start = ind; ind_start != ind_end; ind_start++)
+			arr_tokens[ind_token].data.str[ind_start - ind] = string[ind_start];
+		arr_tokens[ind_token].data.str[offset - 1] = '\0';
 	} else {
-		//ERROR_IS_TOKEN:
+
+		puts("\tERROR_IS_TOKEN");
+
+		ERROR_IS_TOKEN:
 		arr_tokens[ind_token].type = UNDEFINED_TYPE;
 		arr_tokens[ind_token].data.str = NULL;
 	}
@@ -157,15 +207,21 @@ static char
 __data_correctness(void)
 {
 	//fprintf(stdin, "%p", arr_tokens);
-	return 1;
+	return 0;
 }
 
 
 int
 main()
 {
-	__input();
+	/*__input();
 	__preproces();
-	printf("%s\nlen = %ld\n", string, strlen((char *)string));
+	printf("%s\nlen = %ld\n", string, strlen((char *)string));*/
+	if (!get_tokens()) {
+		return 1;
+	}
+	unsigned len_arr_tokens = 0;
+	for (; arr_tokens[len_arr_tokens].type != END_ARR_TOKENS; len_arr_tokens++);
+	printf("len = %u\n", len_arr_tokens);
 	return 0;
 }

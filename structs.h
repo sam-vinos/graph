@@ -2,7 +2,16 @@
 #define STRUCTS
 
 
-enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, BLACKETS, UNDEFINED_TYPE};
+enum type_token {
+	SIGN,
+	NUMBER,
+	NUMBER_FLOAT,
+	FUNC,
+	BLACKETS,
+
+	UNDEFINED_TYPE,
+	END_ARR_TOKENS
+};
 typedef struct token_t {
 	union {
 		unsigned char symbol;
