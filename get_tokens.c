@@ -73,7 +73,6 @@ get_tokens(void)
 	free(string);
 	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
-		//free(arr_tokens);
 		_free_arr_tokens(arr_tokens, ind_token);
 		arr_tokens = NULL;
 #ifdef TEST
@@ -145,7 +144,10 @@ __is_token(unsigned ind, unsigned ind_token)
 		unsigned ind_end = ind + 1;
 		char int_or_float = 1;
 		for (; IS_NUMBER(string[ind_end]) || string[ind_end] == '.'; ind_end++, offset++) {
-			if (string[ind_end] == '.') int_or_float = 0;
+			if (string[ind_end] == '.') {
+				if (!int_or_float) goto ERROR_IS_TOKEN;
+				int_or_float = 0;
+			}
 		}
 		t_symbol = string[ind_end];
 		string[ind_end] = '\0';
@@ -195,10 +197,10 @@ __is_token(unsigned ind, unsigned ind_token)
 			arr_tokens[ind_token].data.str[ind_start - ind] = string[ind_start];
 		arr_tokens[ind_token].data.str[offset] = '\0';
 	} else {
+		ERROR_IS_TOKEN:
 #ifdef TEST
 		puts("\tERROR_IS_TOKEN");
 #endif
-		ERROR_IS_TOKEN:
 		arr_tokens[ind_token].type = UNDEFINED_TYPE;
 		arr_tokens[ind_token].data.str = NULL;
 	}
@@ -207,26 +209,39 @@ __is_token(unsigned ind, unsigned ind_token)
 
 
 static char
-__data_correctness(void)
+__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций
 {
-	return 0;
-	/*
-	static const unsigned char arr_list_string[] = "sin cos s"; // между функциями обязательно 1 пробел
-	unsigned char t_symbol = 0;
-	for (unsigned ind = 0, ind_end = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
-		if (arr_tokens[ind].type == FUNC) {
-			for (ind_start = ind_end = 0; arr_list_string[ind_start]; ind_start = ind_end) {
-				for (; arr_list_string[ind_end] != ' ' && arr_list_string[ind_end]; ind_end++);
-				t_symbol = arr_list_string[ind_end];
-				arr_list_string[ind_end] = '\0';
-				if (strstr(  )) break;
-				arr_list_string[ind_end] = t_symbol;
-				ind_end++;
-			}
-			if (!arr_list_string[ind_start]) return 1;
+	const unsigned char list_name_funcs[] = "sin\0cos\0s\0\0"; // между функциями обязательно 1 \0
+	unsigned correctnes_blacket = 0;
+	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+		switch (arr_tokens[ind].type) {
+			case OPENING_BLACKET:
+				correctnes_blacket++;
+				break;
+			case CLOSING_BLACKET:
+				if (!correctnes_blacket) goto NOT_CORRECT;
+				correctnes_blacket--;
+				break;
+			case FUNC:
+				while (list_name_funcs[ind_start]) {
+					if (!strcmp((char *)&list_name_funcs[ind_start],\
+								(char *)arr_tokens[ind].data.str))
+						break;
+					while (list_name_funcs[ind_start++]);
+				}
+				if (!list_name_funcs[ind_start]) {
+					goto NOT_CORRECT;
+				}
+				ind_start = 0;
+				break;
+			default:
+				break;
 		}
 	}
-	*/
+	if (correctnes_blacket) {
+		NOT_CORRECT:
+		return 1;
+	}
 	return 0;
 }
 
