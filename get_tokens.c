@@ -9,6 +9,7 @@
 
 /*
 enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
+CONSTANT };
 typedef struct token_t {
 	union data {
 		unsigned char symbol;
@@ -118,6 +119,7 @@ static char
 __preproces(void)
 {
 	unsigned offset = 0, ind = 0;
+	//last_frame_alpha = 0;
 	for (; string[ind]; ind++) {
 		string[ind - offset] = string[ind];
 		if (string[ind] == ' ' || string[ind] == '\t') offset++;
@@ -211,7 +213,9 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций И КОНСТАТНТ
 {
-	const unsigned char list_name_funcs[] = "sin\0cos\0x\0X\0\0"; // между функциями обязательно 1 \0
+	unsigned char list_name_funcs[] = "sin\0cos\0\0"; // между функциями обязательно 1 \0
+	unsigned char list_name_constant[] = "x\0X\0pi\0\0";
+	unsigned char *point_list = NULL;
 	unsigned correctnes_blacket = 0;
 	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
@@ -223,14 +227,20 @@ __data_correctness(void) //проверяет на наличие ошибок �
 				correctnes_blacket--;
 				break;
 			case FUNC:
-				while (list_name_funcs[ind_start]) {
-					if (!strcmp((char *)&list_name_funcs[ind_start],\
-								(char *)arr_tokens[ind].data.str))
+				point_list = list_name_funcs;
+				TWO_ITERATION:
+				while (point_list[ind_start]) {
+					if (!strcmp((char *)&point_list[ind_start], (char *)arr_tokens[ind].data.str))
 						break;
-					while (list_name_funcs[ind_start++]);
+					while (point_list[ind_start++]);
 				}
-				if (!list_name_funcs[ind_start]) {
-					goto NOT_CORRECT;
+				if (!point_list[ind_start]) {
+					if (point_list == list_name_constant) goto NOT_CORRECT;
+					point_list = list_name_constant;
+					ind_start = 0;
+					goto TWO_ITERATION;
+				} else if (point_list == list_name_constant) {
+					arr_tokens[ind].type = CONSTANT;
 				}
 				ind_start = 0;
 				break;
@@ -260,6 +270,7 @@ _free_arr_tokens(Token *arr_tokens, unsigned ind_end)
 
 
 //enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
+//CONSTANT };
 void
 print_arr_tokens(Token *arr_tokens)
 {
@@ -276,6 +287,9 @@ print_arr_tokens(Token *arr_tokens)
 				break;
 			case FUNC:
 				printf("FUNC\t\t\t%s\n", arr_tokens[ind].data.str);
+				break;
+			case CONSTANT:
+				printf("CONSTANT\t\t%s\n", arr_tokens[ind].data.str);
 				break;
 			case OPENING_BLACKET:
 				printf("OPENING_BLACKET\t\t%c\n", arr_tokens[ind].data.symbol);
