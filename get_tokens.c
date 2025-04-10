@@ -209,22 +209,24 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void)
 {
-	static const unsigned char arr_list_string[] = "sin cos s";
-	for (unsigned ind = 0, ind_func = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+	return 0;
+	/*
+	static const unsigned char arr_list_string[] = "sin cos s"; // между функциями обязательно 1 пробел
+	unsigned char t_symbol = 0;
+	for (unsigned ind = 0, ind_end = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		if (arr_tokens[ind].type == FUNC) {
-			/*
-			for (ind_func = 0; arr_list_string[ind_func] != ' ' && arr_list_string[ind_func] &&\
-					arr_tokens[ind].data.str[ind_func] &&\
-					arr_tokens[ind].data.str[ind_func] == arr_list_string[ind_func];
-					ind_func++);
-			if (!((arr_list_string[ind_func] == ' ' || !arr_list_string[ind_func]) &&\
-						!arr_tokens[ind].data.str[ind_func]))
-				return 1;
-			*/
-			for (ind_start = 0; ; ) {
+			for (ind_start = ind_end = 0; arr_list_string[ind_start]; ind_start = ind_end) {
+				for (; arr_list_string[ind_end] != ' ' && arr_list_string[ind_end]; ind_end++);
+				t_symbol = arr_list_string[ind_end];
+				arr_list_string[ind_end] = '\0';
+				if (strstr(  )) break;
+				arr_list_string[ind_end] = t_symbol;
+				ind_end++;
 			}
+			if (!arr_list_string[ind_start]) return 1;
 		}
 	}
+	*/
 	return 0;
 }
 
@@ -272,6 +274,8 @@ print_arr_tokens(Token *arr_tokens)
 		}
 	}
 }
+
+
 
 
 #ifdef TEST
