@@ -7,7 +7,6 @@ enum type_token {
 	NUMBER,
 	NUMBER_FLOAT,
 	FUNC,
-	//BLACKETS,
 	OPENING_BLACKET,
 	CLOSING_BLACKET,
 	

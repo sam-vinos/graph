@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-Wall -Wextra -std=c99
+FLAGS=-Wall -Wextra -std=c99 #-Werror
 
 #get_tokens.c
 GET_TOKENS=get_tokens
@@ -7,20 +7,26 @@ SOURCE_GET_TOKENS=$(GET_TOKENS).c
 OBG_GET_TOKENS=$(GET_TOKENS).o
 TEST_GET_TOKENS=test_$(GET_TOKENS)
 
+#main.c
 NAME_MAIN=main
 SOURCE_MAIN=$(NAME_MAIN).c
 OBG_MAIN=$(NAME_MAIN).o
 
+#input_check.c
+INPUT_CHECK=input_check
+SOURCE_INPUT_CHECK=$(INPUT_CHECK).c
+OBJ_INPUT_CHECK=$(INPUT_CHECK).o
+
 PROG=graph
 
 CLEAN=rm -f
-CLEAN_LIST=$(OBG_GET_TOKENS) $(TEST_GET_TOKENS) $(OBG_MAIN) $(PROG)
+CLEAN_LIST=$(PROG) $(OBG_GET_TOKENS) $(TEST_GET_TOKENS) $(OBG_MAIN) $(OBJ_INPUT_CHECK)
 
 
 
 all: $(PROG)#$(TEST_GET_TOKENS)
 
-$(PROG): $(OBG_MAIN) $(OBG_GET_TOKENS)
+$(PROG):$(OBG_MAIN) $(OBG_GET_TOKENS) $(OBJ_INPUT_CHECK)
 	$(CC) $(FLAGS) $^ -o $@
 
 $(OBG_MAIN): $(SOURCE_MAIN)
@@ -29,8 +35,16 @@ $(OBG_MAIN): $(SOURCE_MAIN)
 $(OBG_GET_TOKENS): $(SOURCE_GET_TOKENS)
 	$(CC) $(FLAGS) -c $^
 
+$(OBG_INPUT_CHECK): $(SOURCE_INPUT_CHECK)
+	$(CC) $(FLAGS) -c $^
+
+
+
 clean:
 	$(CLEAN) $(CLEAN_LIST)
+
+run:
+	./$(PROG)
 
 
 

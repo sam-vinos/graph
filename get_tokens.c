@@ -8,7 +8,7 @@
 
 
 /*
-enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS};
+enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
 typedef struct token_t {
 	union data {
 		unsigned char symbol;
@@ -209,9 +209,9 @@ __is_token(unsigned ind, unsigned ind_token)
 
 
 static char
-__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций
+__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций И КОНСТАТНТ
 {
-	const unsigned char list_name_funcs[] = "sin\0cos\0s\0\0"; // между функциями обязательно 1 \0
+	const unsigned char list_name_funcs[] = "sin\0cos\0x\0X\0\0"; // между функциями обязательно 1 \0
 	unsigned correctnes_blacket = 0;
 	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
@@ -259,7 +259,7 @@ _free_arr_tokens(Token *arr_tokens, unsigned ind_end)
 }
 
 
-//enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS};
+//enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
 void
 print_arr_tokens(Token *arr_tokens)
 {
