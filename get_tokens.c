@@ -7,6 +7,9 @@
 
 #include "config.h"
 
+/*
+ * нужно убрать случай обработки: si n; и случай когда -.0 1---1 правильно обрабатывается
+ */
 
 
 /*
@@ -121,11 +124,11 @@ static char
 __preproces(void)
 {
 	unsigned offset = 0, ind = 0;
-	//last_frame_alpha = 0;
+	//char last_frame_alpha = 0;
 	for (; string[ind]; ind++) {
 		string[ind - offset] = string[ind];
 		if (string[ind] == ' ' || string[ind] == '\t') offset++;
-		if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
+		else if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
 					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])
 					&& !IS_NUMBER(string[ind]) && string[ind] != '.') { // '.' - для натуральных
 			return 1;
@@ -193,7 +196,7 @@ __is_token(unsigned ind, unsigned ind_token)
 		puts("\tIS_FUNC");
 #endif
 		unsigned ind_end = ind + 1;
-		for (; IS_ALPHA(string[ind_end]) || IS_NUMBER(string[ind_end]); ind_end++, offset++);
+		for (; IS_ALPHA(string[ind_end]); ind_end++, offset++);
 		arr_tokens[ind_token].type = FUNC;
 		arr_tokens[ind_token].data.str = (unsigned char *)calloc(offset, sizeof(unsigned char));
 		if (!(arr_tokens[ind_token].data.str)) goto ERROR_IS_TOKEN;
