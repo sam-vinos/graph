@@ -1,0 +1,7 @@
+#ifndef CONFIG_FUNCS_AND_CONSTANT
+#define CONFIG_FUNCS_AND_CONSTANT
+
+#define LIST_NAMES_FUNC "sin\0cos\0\0"
+#define LIST_NAMES_CONSTANT "x\0X\0\0"
+
+#endif

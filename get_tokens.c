@@ -5,6 +5,8 @@
 #include "get_tokens.h"
 #include "structs.h"
 
+#include "config.h"
+
 
 
 /*
@@ -23,9 +25,9 @@ typedef struct token_t {
 
 
 static void __input(void);
-static char __data_correctness(void);
-static unsigned __is_token(unsigned ind, unsigned ind_token);
 static char __preproces(void);
+static unsigned __is_token(unsigned ind, unsigned ind_token);
+static char __data_correctness(void);
 
 static  unsigned char *string;
 static Token *arr_tokens;
@@ -213,8 +215,8 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций И КОНСТАТНТ
 {
-	unsigned char list_name_funcs[] = "sin\0cos\0\0"; // между функциями обязательно 1 \0
-	unsigned char list_name_constant[] = "x\0X\0pi\0\0";
+	unsigned char list_name_funcs[] = LIST_NAMES_FUNC;
+	unsigned char list_name_constant[] = LIST_NAMES_CONSTANT;
 	unsigned char *point_list = NULL;
 	unsigned correctnes_blacket = 0;
 	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {

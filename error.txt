@@ -1,0 +1,22 @@
+get_tokens.c:7:9: error: macro names must be identifiers
+    7 | #define "config.h"
+      |         ^~~~~~~~~~
+get_tokens.c: In function ‘__is_token’:
+get_tokens.c:145:92: error: macro "IS_NEGATIVE_NUMBER" requires 4 arguments, but only 2 given
+  145 |         if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
+      |                                                                                            ^
+get_tokens.c:138: note: macro "IS_NEGATIVE_NUMBER" defined here
+  138 | #define IS_NEGATIVE_NUMBER(ind, arr, ind_string, string) (!ind || (arr[ind - 1].type == SIGN ||\
+      | 
+get_tokens.c:145:52: error: ‘IS_NEGATIVE_NUMBER’ undeclared (first use in this function)
+  145 |         if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
+      |                                                    ^~~~~~~~~~~~~~~~~~
+get_tokens.c:145:52: note: each undeclared identifier is reported only once for each function it appears in
+get_tokens.c: In function ‘__data_correctness’:
+get_tokens.c:217:43: error: ‘LIST_NAME_FUNCS’ undeclared (first use in this function)
+  217 |         unsigned char list_name_funcs[] = LIST_NAME_FUNCS; // между функциями обязательно 1 \0
+      |                                           ^~~~~~~~~~~~~~~
+get_tokens.c:218:46: error: ‘LIST_NAME_CONSTANT’ undeclared (first use in this function)
+  218 |         unsigned char list_name_constant[] = LIST_NAME_CONSTANT;
+      |                                              ^~~~~~~~~~~~~~~~~~
+make: *** [Makefile:36: get_tokens.o] Ошибка 1
