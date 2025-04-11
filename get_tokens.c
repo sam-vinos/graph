@@ -124,15 +124,21 @@ static char
 __preproces(void)
 {
 	unsigned offset = 0, ind = 0;
-	//char last_frame_alpha = 0;
+	char last_frame_alpha = 0;
 	for (; string[ind]; ind++) {
 		string[ind - offset] = string[ind];
-		if (string[ind] == ' ' || string[ind] == '\t') offset++;
+		if (string[ind] == ' ' || string[ind] == '\t') {
+			if (last_frame_alpha == 1) last_frame_alpha = 2;
+			offset++;
+		}
 		else if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
 					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])
 					&& !IS_NUMBER(string[ind]) && string[ind] != '.') { // '.' - для натуральных
 			return 1;
-		}
+		} else if (IS_ALPHA(string[ind])) {
+			if (last_frame_alpha == 2) return 1;
+			last_frame_alpha = 1;
+		} else last_frame_alpha = 0;
 	}
 	string[ind - offset] = '\0';
 	return 0;
