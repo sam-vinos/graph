@@ -14,6 +14,7 @@ main()
 		return 1;
 	}
 	print_arr_tokens(arr_tokens);
-	//free_arr_tokens(arr_tokens);
+	printf("len = %u\n", get_len_arr_tokens(arr_tokens));
+	free_arr_tokens(arr_tokens);
 	return 0;
 }

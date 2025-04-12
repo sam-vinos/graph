@@ -26,6 +26,8 @@ CLEAN_LIST=$(PROG) $(OBG_GET_TOKENS) $(TEST_GET_TOKENS) $(OBG_MAIN) $(OBJ_INPUT_
 
 all: $(PROG)#$(TEST_GET_TOKENS)
 
+rebuild: clean all
+
 $(PROG):$(OBG_MAIN) $(OBG_GET_TOKENS) $(OBJ_INPUT_CHECK)
 	$(CC) $(FLAGS) $^ -o $@
 

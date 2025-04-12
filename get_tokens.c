@@ -14,7 +14,7 @@
 
 /*
 enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
-CONSTANT };
+CONSTANT, SEPARATOR_IN_FUNC };
 typedef struct token_t {
 	union data {
 		unsigned char symbol;
@@ -45,6 +45,7 @@ get_tokens(void)
 	arr_tokens = (Token *)calloc(len_arr_tokens, sizeof(Token));
 	unsigned ind_token = 0;
 	if (!arr_tokens || !string || __preproces()) {
+		puts("JJJ");
 		free(string);
 		goto ERROR_GET_TOKENS;
 	}
@@ -120,6 +121,7 @@ __input(void)
 #define IS_CLOSING_BLACKET(s) (s == ')')
 #define IS_NUMBER(s) (s >= '0' && s <= '9')
 #define IS_SEPARATOR(s) (s == ' ' || s == '\t')
+#define IS_SEPARATOR_IN_FUNC(s) (s == ',')
 static char
 __preproces(void)
 {
@@ -127,15 +129,18 @@ __preproces(void)
 	char last_frame_alpha = 0;
 	for (; string[ind]; ind++) {
 		string[ind - offset] = string[ind];
-		if (string[ind] == ' ' || string[ind] == '\t') {
+		if (IS_SEPARATOR(string[ind])) {
 			if (last_frame_alpha == 1) last_frame_alpha = 2;
 			offset++;
-		}
-		else if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
-					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])
-					&& !IS_NUMBER(string[ind]) && string[ind] != '.') { // '.' - для натуральных
+		} else if (!IS_ALPHA(string[ind]) && !IS_SIGN(string[ind]) && !IS_SEPARATOR(string[ind]) &&\
+					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])\
+					&& !IS_NUMBER(string[ind]) && string[ind] != '.' &&\
+					!IS_SEPARATOR_IN_FUNC(string[ind])) { // '.' - для натуральных
 			return 1;
-		} else if (IS_ALPHA(string[ind])) {
+		
+		} /*else if (IS_SEPARATOR_IN_FUNC(string[ind])) {
+			return 1;
+		}*/ else if (IS_ALPHA(string[ind])) {
 			if (last_frame_alpha == 2) return 1;
 			last_frame_alpha = 1;
 		} else last_frame_alpha = 0;
@@ -209,6 +214,12 @@ __is_token(unsigned ind, unsigned ind_token)
 		for (unsigned ind_start = ind; ind_start != ind_end; ind_start++)
 			arr_tokens[ind_token].data.str[ind_start - ind] = string[ind_start];
 		arr_tokens[ind_token].data.str[offset] = '\0';
+	} else if (IS_SEPARATOR_IN_FUNC(symbol)) {
+#ifdef TEST
+		puts("IS_SEPARATOR_IN_FUNC");
+#endif
+		arr_tokens[ind_token].type = SEPARATOR_IN_FUNC;
+		arr_tokens[ind_token].data.symbol = ',';
 	} else {
 		ERROR_IS_TOKEN:
 #ifdef TEST
@@ -299,7 +310,7 @@ _free_arr_tokens(Token *arr_tokens, unsigned ind_end)
 
 
 //enum type_token {SIGN, NUMBER, NUMBER_FLOAT, FUNC, OPENING_BLACKET, CLOSING_BLACKET, UNDEFINED_TYPE, END_ARR_TOKENS,
-//CONSTANT };
+//CONSTANT, SEPARATOR_IN_FUNC};
 void
 print_arr_tokens(Token *arr_tokens)
 {
@@ -326,11 +337,23 @@ print_arr_tokens(Token *arr_tokens)
 			case CLOSING_BLACKET:
 				printf("CLOSING_BLACKET\t\t%c\n", arr_tokens[ind].data.symbol);
 				break;
+			case SEPARATOR_IN_FUNC:
+				printf("SEPARATOR_IN_FUNC\t%c\n", arr_tokens[ind].data.symbol);
+				break;
 			case UNDEFINED_TYPE:
 				puts("UNDEFINED_TYPE!!!");
 				break;
 		}
 	}
+}
+
+
+unsigned
+get_len_arr_tokens(Token *arr_tokens)
+{
+	unsigned len = 0;
+	for (; arr_tokens[len].type != END_ARR_TOKENS; len++);
+	return len;
 }
 
 
