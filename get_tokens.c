@@ -79,7 +79,7 @@ get_tokens(void)
 	free(string);
 	if (__data_correctness()) {
 		ERROR_GET_TOKENS:
-		_free_arr_tokens(arr_tokens, ind_token);
+		if (ind_token) _free_arr_tokens(arr_tokens, ind_token);
 		arr_tokens = NULL;
 #ifdef TEST
 		puts("ERROR");
@@ -145,14 +145,14 @@ __preproces(void)
 }
 
 
-#define IS_NEGATIVE_NUMBER(ind, arr) (!ind || (arr[ind - 1].type == SIGN ||\
-			(arr[ind - 1].type == OPENING_BLACKET)))
+#define IS_NEGATIVE_NUMBER(ind, arr, ind_str, string) ((!ind || (arr[ind - 1].type == SIGN ||\
+			(arr[ind - 1].type == OPENING_BLACKET))) && IS_NUMBER(string[ind_str + 1]))
 static unsigned
 __is_token(unsigned ind, unsigned ind_token)
 {
 	unsigned offset = 1;
 	char symbol = string[ind];
-	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens))) {
+	if (IS_NUMBER(symbol) || (symbol == '-' && IS_NEGATIVE_NUMBER(ind_token, arr_tokens, ind, string))) {
 		unsigned char t_symbol = 0;
 		unsigned ind_end = ind + 1;
 		char int_or_float = 1;
@@ -270,12 +270,30 @@ __data_correctness(void) //проверяет на наличие ошибок �
 void
 _free_arr_tokens(Token *arr_tokens, unsigned ind_end)
 {
-	if (!ind_end) return;
-	for (unsigned ind = 0; (ind_end && ind != ind_end) || (arr_tokens[ind].type != END_ARR_TOKENS); ind++) {
-		if (arr_tokens[ind].type == FUNC) {
+#ifdef TEST
+	puts("FREE_ARR_TOKENS");
+	printf("ind_end = %d\n", ind_end);
+#endif
+	if (!arr_tokens) return;
+	for (unsigned ind = 0; (ind_end && ind != ind_end) || (!ind_end &&\
+				arr_tokens[ind].type != END_ARR_TOKENS); ind++) {
+#ifdef TEST
+		printf("ind = %d\n", ind);
+#endif
+		if ((arr_tokens[ind].type == FUNC || arr_tokens[ind].type == CONSTANT) &&\
+				!arr_tokens[ind].data.str) {
+#ifdef TEST
+			puts("HHH");
+#endif
 			free(arr_tokens[ind].data.str);
+#ifdef TEST
+			puts("hhh");
+#endif
 		}
 	}
+#ifdef TEST
+	puts("FREE_ARR_TOKENS");
+#endif
 	free(arr_tokens);
 }
 
@@ -329,7 +347,7 @@ main()
 	for (; arr_tokens[len_arr_tokens].type != END_ARR_TOKENS; len_arr_tokens++);
 	printf("len = %u\n", len_arr_tokens);
 	print_arr_tokens(arr_tokens);
-	_free_arr_tokens(arr_tokens, len_arr_tokens);
+	//_free_arr_tokens(arr_tokens, len_arr_tokens);
 	return 0;
 }
 #endif
