@@ -1,5 +1,5 @@
 #ifndef INPUT_CHECK
-#define INPUT_CHECK
+#define INPUT_CHECKS
 
 #include "structs.h"
 

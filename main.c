@@ -2,7 +2,7 @@
 
 #include "get_tokens.h"
 #include "structs.h"
-#include "input_check.h"
+//#include "input_check.h"
 
 
 int
