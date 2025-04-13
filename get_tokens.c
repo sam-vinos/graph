@@ -233,8 +233,8 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций и констатнт
 {
-	//unsigned char list_name_funcs[] = LIST_NAMES_FUNC;
-	//unsigned char list_name_constant[] = LIST_NAMES_CONSTANT;
+	unsigned char list_names_funcs[] = LIST_NAMES_FUNCS;
+	unsigned char list_names_constants[] = LIST_NAMES_CONSTANTS;
 	unsigned char *point_list = NULL;
 	unsigned correctnes_blacket = 0;
 	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
