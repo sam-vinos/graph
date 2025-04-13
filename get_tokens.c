@@ -138,9 +138,7 @@ __preproces(void)
 					!IS_SEPARATOR_IN_FUNC(string[ind])) { // '.' - для натуральных
 			return 1;
 		
-		} /*else if (IS_SEPARATOR_IN_FUNC(string[ind])) {
-			return 1;
-		}*/ else if (IS_ALPHA(string[ind])) {
+		}  else if (IS_ALPHA(string[ind])) {
 			if (last_frame_alpha == 2) return 1;
 			last_frame_alpha = 1;
 		} else last_frame_alpha = 0;
@@ -233,7 +231,7 @@ __is_token(unsigned ind, unsigned ind_token)
 
 
 static char
-__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций И КОНСТАТНТ
+__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций и констатнт
 {
 	unsigned char list_name_funcs[] = LIST_NAMES_FUNC;
 	unsigned char list_name_constant[] = LIST_NAMES_CONSTANT;
