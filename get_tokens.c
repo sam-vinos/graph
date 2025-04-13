@@ -233,8 +233,8 @@ __is_token(unsigned ind, unsigned ind_token)
 static char
 __data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций и констатнт
 {
-	unsigned char list_name_funcs[] = LIST_NAMES_FUNC;
-	unsigned char list_name_constant[] = LIST_NAMES_CONSTANT;
+	//unsigned char list_name_funcs[] = LIST_NAMES_FUNC;
+	//unsigned char list_name_constant[] = LIST_NAMES_CONSTANT;
 	unsigned char *point_list = NULL;
 	unsigned correctnes_blacket = 0;
 	for (unsigned ind = 0, ind_start = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
@@ -247,7 +247,7 @@ __data_correctness(void) //проверяет на наличие ошибок �
 				correctnes_blacket--;
 				break;
 			case FUNC:
-				point_list = list_name_funcs;
+				point_list = list_names_funcs;
 				TWO_ITERATION:
 				while (point_list[ind_start]) {
 					if (!strcmp((char *)&point_list[ind_start], (char *)arr_tokens[ind].data.str))
@@ -255,11 +255,11 @@ __data_correctness(void) //проверяет на наличие ошибок �
 					while (point_list[ind_start++]);
 				}
 				if (!point_list[ind_start]) {
-					if (point_list == list_name_constant) goto NOT_CORRECT;
-					point_list = list_name_constant;
+					if (point_list == list_names_constants) goto NOT_CORRECT;
+					point_list = list_names_constants;
 					ind_start = 0;
 					goto TWO_ITERATION;
-				} else if (point_list == list_name_constant) {
+				} else if (point_list == list_names_constants) {
 					arr_tokens[ind].type = CONSTANT;
 				}
 				ind_start = 0;
