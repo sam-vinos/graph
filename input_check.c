@@ -1,4 +1,6 @@
 #include "structs.h"
+#include "config.h"
+
 #include <stdio.h>
 
 
@@ -18,14 +20,43 @@ char
 input_check(Token *arr_tokens)
 {
 	unsigned nesting = 0;
-	unsigned fixten_nesting = 1;
+	//unsigned fixten_nesting = 1;
 	unsigned max_nesting = 0;
 	unsigned ind = 0;
-	for (; arr_tokens[ind].type == END_ARR_TOKENS; ind++) {
+	char in_func;
+	for (/*unsigned ind_func = 0*/; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
 			case UNDEFINED_TYPE:
+				ERROR_INPUT_CHECK:
 				fprintf(stderr, "%s\n", "Incorrect token sequence");
 				return 1;
+			case OPENING_BLACKET:
+				nesting++;
+				if (nesting > max_nesting) max_nesting++;
+				break;
+			case CLOSING_BLACKET:
+				nesting--;
+				break;
+			case FUNC:
+				if (arr_tokens[ind + 1].type != OPENING_BLACKET)
+					goto ERROR_INPUT_CHECK;
+				//????
+				break;
+		}
+	}
+	//printf("max_nesting = %d\n", max_nesting);
+	//printf("nesting = %d\n", nesting);
+	for (max_nesting++; max_nesting;) {
+		max_nesting--;
+		for (ind = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+			if (nesting == max_nesting) {
+				for (;;) {}
+			}
+			switch (arr_tokens[ind].type) {
+				//для нахождения нужной вложенности
+				case 1:
+					break;
+			}
 		}
 	}
 	return 0;
