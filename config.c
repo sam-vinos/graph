@@ -22,7 +22,9 @@ config_check(void)
 		if (!list_names_funcs[ind_list_funcs]) break;
 		while (list_names_funcs[++ind_list_funcs]);
 		ind_list_funcs++;
+#ifdef TEST
 		printf("list_names_funcs[%d] = %d\n", ind_list_funcs, list_names_funcs[ind_list_funcs]);
+#endif
 	}
 	if (!(!list_names_funcs[ind_list_funcs] && list_number_args_funcs[ind_list_args] == -1)) {
 		ERROR:
@@ -31,7 +33,9 @@ config_check(void)
 	}
 	for (; list_names_constants[ind_list_constants]; ind_list_constants++) {
 		while (list_names_constants[++ind_list_constants]);
+#ifdef TEST
 		printf("list_names_constants[%d] = %d\n", ind_list_constants, list_names_constants[ind_list_constants]);
+#endif
 	}
 	if (list_names_constants[ind_list_constants + 1]) goto ERROR;
 	return 0;

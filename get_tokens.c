@@ -45,7 +45,6 @@ get_tokens(void)
 	arr_tokens = (Token *)calloc(len_arr_tokens, sizeof(Token));
 	unsigned ind_token = 0;
 	if (!arr_tokens || !string || __preproces()) {
-		puts("JJJ");
 		free(string);
 		goto ERROR_GET_TOKENS;
 	}
@@ -82,6 +81,7 @@ get_tokens(void)
 		ERROR_GET_TOKENS:
 		if (ind_token) _free_arr_tokens(arr_tokens, ind_token);
 		arr_tokens = NULL;
+		fprintf(stderr, "%s\n", "Invalid character or incorrect number of brackets");
 #ifdef TEST
 		puts("ERROR");
 #endif
@@ -136,10 +136,14 @@ __preproces(void)
 					!IS_CLOSING_BLACKET(string[ind]) && !IS_OPENING_BLACKET(string[ind])\
 					&& !IS_NUMBER(string[ind]) && string[ind] != '.' &&\
 					!IS_SEPARATOR_IN_FUNC(string[ind])) { // '.' - для натуральных
-			return 1;
+			//return 1;
+			goto ERROR_PREPROCESS;
 		
 		}  else if (IS_ALPHA(string[ind])) {
-			if (last_frame_alpha == 2) return 1;
+			if (last_frame_alpha == 2) {
+				ERROR_PREPROCESS:
+				return 1;
+			}
 			last_frame_alpha = 1;
 		} else last_frame_alpha = 0;
 	}
