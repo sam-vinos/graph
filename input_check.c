@@ -14,8 +14,9 @@ static int __get_max_nesting(Token *arr_tokens); //так же проверяе�
 static char __is_not_true_func(Token *arr_tokens, unsigned ind);
 static char __is_not_true_separator(Token *arr_tokens, signed ind);
 static char __main_analysis_syntax(Token *arr_tokens, int max_nesting);
-static signed __true_arg_func(Token *arr_tokens, signed ind_start);
-static signed __true_syntax_expression(Token *arr_tokens, signed ind_start, signed ind_end);
+static signed __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func);
+static signed __true_syntax_expression(Token *arr_tokens, signed ind_start);
+static signed __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end);
 
 
 char
@@ -147,26 +148,53 @@ __main_analysis_syntax(Token *arr_tokens, int max_nesting)
 		for (ind = 0, nesting = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 			if (nesting == max_nesting) {
 				if (ind == 2 && arr_tokens[ind - 2].type == FUNC) {
-					ind = __true_arg_func(arr_tokens, ind);
-				} else {
-					int fix_nesting = nesting;
-					signed ind_end = ind;
-					ind = __true_syntax_expression(arr_tokens, ind, ind_end);
+					ind = __true_arg_func(arr_tokens, ind, arr_tokens[ind - 2].data.str);
+					nesting--;
 				}
+				else
+					ind = __true_syntax_expression(arr_tokens, ind);
 				if (ind == -1) {
 					fprintf(stderr, "%s\n", "Error");
 					return 1;
 				}
-				switch (arr_tokens[ind].type) {
-					case OPENING_BLACKET:
-						nesting++;
-						break;
-					case CLOSING_BLACKET:
-						nesting--;
-						break;
-				}
+			}
+			switch (arr_tokens[ind].type) {
+				case OPENING_BLACKET:
+					nesting++;
+					break;
+				case CLOSING_BLACKET:
+					nesting--;
+					break;
 			}
 		}
 	} while (max_nesting--);
 	return 0;
+}
+
+
+static signed
+__true_syntax_expression(Token *arr_tokens, signed ind_start)
+{
+	signed nesting = 0;
+	signed ind_end = ind_start;
+	for (; nesting != -1 && arr_tokens[ind_end] != END_ARR_TOKENS; ind_end++) {
+		switch (arr_tokens[ind_end]) {
+			case OPENING_BLACKET:
+				nesting++;
+				break;
+			case CLOSING_BLACKET:
+				nesting--;
+				break;
+		}
+	}
+	if (nesting > 0) return -1;
+	return func(arr_tokens, ind_start, ind_end); //?name_func
+}
+
+
+static signed
+__true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func)
+{
+	signed ind_result;
+	return ind_result;
 }
