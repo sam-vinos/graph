@@ -1,4 +1,4 @@
-CC=gcc
+CC=clang
 FLAGS=-Wall -Wextra -std=c99 #-Werror
 
 #get_tokens.c
