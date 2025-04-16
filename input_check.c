@@ -13,17 +13,22 @@ CONSTANT, SEPARATOR_IN_FUNC };
 static int __get_max_nesting(Token *arr_tokens); //так же проверяет синтаксис функций
 static char __is_not_true_func(Token *arr_tokens, unsigned ind);
 static char __is_not_true_separator(Token *arr_tokens, signed ind);
-//static unsigned char __get_number
+static char __main_analysis_syntax(Token *arr_tokens, int max_nesting);
+static signed __true_arg_func(Token *arr_tokens, signed ind_start);
+static signed __true_syntax_expression(Token *arr_tokens, signed ind_start, signed ind_end);
+
 
 char
 input_check(Token *arr_tokens)
 {
 	int max_nesting = __get_max_nesting(arr_tokens);
 	if (max_nesting == -1) {
-		//ERROR_INPUT_CHECK:
+		ERROR_INPUT_CHECK:
 		free_arr_tokens(arr_tokens);
 		return 1;
 	}
+	if (__main_analysis_syntax(arr_tokens, max_nesting))
+			goto ERROR_INPUT_CHECK;
 	printf("max_nesting = %d\n", max_nesting);
 	return 0;
 }
@@ -129,5 +134,39 @@ __is_not_true_separator(Token *arr_tokens, signed ind)
 		}
 	}
 	if (arr_tokens[ind].type != FUNC || nesting != -1) return 1;
+	return 0;
+}
+
+
+static char
+__main_analysis_syntax(Token *arr_tokens, int max_nesting)
+{
+	signed ind = 0;
+	int nesting = 0;
+	do {
+		for (ind = 0, nesting = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+			if (nesting == max_nesting) {
+				if (ind == 2 && arr_tokens[ind - 2].type == FUNC) {
+					ind = __true_arg_func(arr_tokens, ind);
+				} else {
+					int fix_nesting = nesting;
+					signed ind_end = ind;
+					ind = __true_syntax_expression(arr_tokens, ind, ind_end);
+				}
+				if (ind == -1) {
+					fprintf(stderr, "%s\n", "Error");
+					return 1;
+				}
+				switch (arr_tokens[ind].type) {
+					case OPENING_BLACKET:
+						nesting++;
+						break;
+					case CLOSING_BLACKET:
+						nesting--;
+						break;
+				}
+			}
+		}
+	} while (max_nesting--);
 	return 0;
 }

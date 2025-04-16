@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "config.h"
 
@@ -19,6 +20,7 @@ config_check(void)
 	unsigned ind_list_args = 0;
 	unsigned ind_list_constants = 0;
 	for (; list_number_args_funcs[ind_list_args] != -1; ind_list_args++) {
+		if (!list_number_args_funcs[ind_list_args]) goto ERROR;
 		if (!list_names_funcs[ind_list_funcs]) break;
 		while (list_names_funcs[++ind_list_funcs]);
 		ind_list_funcs++;
@@ -39,4 +41,23 @@ config_check(void)
 	}
 	if (list_names_constants[ind_list_constants + 1]) goto ERROR;
 	return 0;
+}
+
+
+signed char
+number_args_func(unsigned char *name_func)
+{
+	unsigned char list_name_func[] = LIST_NAMES_FUNCS;
+	signed char list_number_args_funcs[] = LIST_NUMBER_ARGS_FUNCS;
+	signed char result_number = -1;
+	for (unsigned ind_list_args = 0, ind_name_funcs = 0; list_number_args_funcs[ind_list_args] != -1;
+			ind_list_args++) {
+		if (!strcmp((char *)name_func, (char *)&list_name_func[ind_name_funcs])) {
+			result_number = list_number_args_funcs[ind_list_args];
+			break;
+		}
+		while (list_name_func[++ind_name_funcs]);
+		ind_name_funcs++;
+	}
+	return result_number;
 }

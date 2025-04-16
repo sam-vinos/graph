@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <getopt.h>
 
 #include "get_tokens.h"
 #include "structs.h"
