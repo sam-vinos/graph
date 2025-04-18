@@ -50,6 +50,11 @@ __get_max_nesting(Token *arr_tokens) //добавить еще функцию д
 				break;
 			case CLOSING_BLACKET:
 				nesting--;
+				if (ind && arr_tokens[ind - 1].type == OPENING_BLACKET) {
+					max_nesting = -1;
+					fprintf(stderr, "%s\n", "Empty nesting");
+					goto ERROR_GET_MAX_NESTING;
+				}
 				break;
 			case FUNC:
 				if (__is_not_true_func(arr_tokens, ind)) {
