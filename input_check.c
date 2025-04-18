@@ -78,12 +78,6 @@ __get_max_nesting(Token *arr_tokens) //добавить еще функцию д
 }
 
 
-/*
-#define LIST_NAMES_FUNCS "log\0arcsin\0sin\0cos\0\0"
-#define LIST_NUMBER_ARGS_FUNCS {2, 1, 1, 1, -1}
-
-#define LIST_NAMES_CONSTANTS "pi\0x\0X\0\0"
-*/
 static char
 __is_not_true_func(Token *arr_tokens, unsigned ind)
 {
@@ -154,16 +148,14 @@ __main_analysis_syntax(Token *arr_tokens, int max_nesting)
 	do {
 		for (ind = 0, nesting = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 			if (nesting == max_nesting) {
-				/*if (ind >= 2 && arr_tokens[ind - 2].type == FUNC) {
+				if (ind >= 2 && arr_tokens[ind - 2].type == FUNC)
 					ind = __true_arg_func(arr_tokens, ind, arr_tokens[ind - 2].data.str);
-					//nesting--;
-				} else*/
-				if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
+				else if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
 						arr_tokens[ind].type == CONSTANT ||\
 						arr_tokens[ind].type == NUMBER_FLOAT)
 					ind = __true_syntax_expression(arr_tokens, ind);
 				if (ind == -1) {
-					fprintf(stderr, "%s\n", "Error");
+					//fprintf(stderr, "%s\n", "Error");
 					return 1;
 				}
 			}
@@ -197,7 +189,9 @@ __true_syntax_expression(Token *arr_tokens, signed ind_start)
 		}
 	}
 	if (nesting > 0) return -1;
+#ifdef TEST
 	printf("ind_start = %d; ind_end = %d\n", ind_start, ind_end);
+#endif
 	return __expression_checking(arr_tokens, ind_start, ind_end); //?name_func
 }
 
@@ -205,8 +199,29 @@ __true_syntax_expression(Token *arr_tokens, signed ind_start)
 static signed
 __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func)
 {
-	signed ind_result = 0;
-	return ind_result;
+	signed number_args = number_args_func(name_func);
+	if (number_args == -1) return -1;
+	signed ind_end = ind_start;
+	unsigned nesting = 0;
+	for (; number_args; number_args--) {
+		ind_start = ind_end;
+		for (nesting = 0; !(!nesting && arr_tokens[ind_end].type == CLOSING_BLACKET) &&\
+				arr_tokens[ind_end].type != SEPARATOR_IN_FUNC; ind_end++) {
+			switch (arr_tokens[ind_end].type) {
+				case OPENING_BLACKET:
+					nesting++;
+					break;
+				case CLOSING_BLACKET:
+					nesting++;
+					break;
+			}
+		}
+		ind_end = __expression_checking(arr_tokens, ind_start, ind_end);
+		if (ind_end == -1) return -1;
+		ind_end += 2;
+
+	}
+	return ind_end - 2;
 }
 
 
@@ -223,9 +238,13 @@ __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end)
 			case NUMBER:
 			case NUMBER_FLOAT:
 			case CONSTANT:
+#ifdef TEST
 				printf("number ind_start = %d\n", ind_start);
+#endif
 				if (past_token != SIGN) {
+#ifdef TEST
 					puts("Error 1");
+#endif
 					return -1;
 				}
 				past_token = NUMBER;
@@ -236,7 +255,9 @@ __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end)
 						ind_start++;
 						nesting = 1;
 						while (nesting) {
+#ifdef TEST
 							printf("nesting = %d; ind = %d\n", nesting, ind_start);
+#endif
 							switch (arr_tokens[ind_start].type) {
 								case OPENING_BLACKET:
 									nesting++;
@@ -252,9 +273,13 @@ __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end)
 				}
 				break;
 			case SIGN:
+#ifdef TEST
 				printf("sign ind_start = %d\n", ind_start);
+#endif
 				if (past_token != NUMBER) {
+#ifdef TEST
 					puts("Error 2");
+#endif
 					return -1;
 				}
 				past_token = SIGN;
@@ -264,9 +289,13 @@ __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end)
 				break;
 		}
 		len++;
+#ifdef TEST
 		printf("LEN = %d\n", len);
+#endif
 	}
 	if (~len & 1) return -1;
+#ifdef TEST
 	puts("End __expression_checking()");
+#endif
 	return ind_end - 1;
 }
