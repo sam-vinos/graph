@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "structs.h"
@@ -14,6 +15,7 @@ static int __get_max_nesting(Token *arr_tokens); //так же проверяе�
 static char __is_not_true_func(Token *arr_tokens, unsigned ind);
 static char __is_not_true_separator(Token *arr_tokens, signed ind);
 static char __main_analysis_syntax(Token *arr_tokens, int max_nesting);
+
 static signed __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func);
 static signed __true_syntax_expression(Token *arr_tokens, signed ind_start);
 static signed __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end);
@@ -28,9 +30,9 @@ input_check(Token *arr_tokens)
 		free_arr_tokens(arr_tokens);
 		return 1;
 	}
+	printf("max_nesting = %d\n", max_nesting);
 	if (__main_analysis_syntax(arr_tokens, max_nesting))
 			goto ERROR_INPUT_CHECK;
-	printf("max_nesting = %d\n", max_nesting);
 	return 0;
 }
 
@@ -147,11 +149,13 @@ __main_analysis_syntax(Token *arr_tokens, int max_nesting)
 	do {
 		for (ind = 0, nesting = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 			if (nesting == max_nesting) {
-				if (ind == 2 && arr_tokens[ind - 2].type == FUNC) {
+				/*if (ind >= 2 && arr_tokens[ind - 2].type == FUNC) {
 					ind = __true_arg_func(arr_tokens, ind, arr_tokens[ind - 2].data.str);
-					nesting--;
-				}
-				else
+					//nesting--;
+				} else*/
+				if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
+						arr_tokens[ind].type == CONSTANT ||\
+						arr_tokens[ind].type == NUMBER_FLOAT)
 					ind = __true_syntax_expression(arr_tokens, ind);
 				if (ind == -1) {
 					fprintf(stderr, "%s\n", "Error");
@@ -177,8 +181,8 @@ __true_syntax_expression(Token *arr_tokens, signed ind_start)
 {
 	signed nesting = 0;
 	signed ind_end = ind_start;
-	for (; nesting != -1 && arr_tokens[ind_end] != END_ARR_TOKENS; ind_end++) {
-		switch (arr_tokens[ind_end]) {
+	for (; nesting != -1 && arr_tokens[ind_end].type != END_ARR_TOKENS; ind_end++) {
+		switch (arr_tokens[ind_end].type) {
 			case OPENING_BLACKET:
 				nesting++;
 				break;
@@ -188,13 +192,76 @@ __true_syntax_expression(Token *arr_tokens, signed ind_start)
 		}
 	}
 	if (nesting > 0) return -1;
-	return func(arr_tokens, ind_start, ind_end); //?name_func
+	printf("ind_start = %d; ind_end = %d\n", ind_start, ind_end);
+	return __expression_checking(arr_tokens, ind_start, ind_end); //?name_func
 }
 
 
 static signed
 __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func)
 {
-	signed ind_result;
+	signed ind_result = 0;
 	return ind_result;
+}
+
+
+static signed
+__expression_checking(Token *arr_tokens, signed ind_start, signed ind_end)
+{
+	unsigned nesting = 0;
+	char past_token = SIGN;
+	unsigned len = 0;
+	for (; ind_start != ind_end; ind_start++) {
+		switch (arr_tokens[ind_start].type) {
+			case FUNC:
+			case OPENING_BLACKET:
+			case NUMBER:
+			case NUMBER_FLOAT:
+			case CONSTANT:
+				printf("number ind_start = %d\n", ind_start);
+				if (past_token != SIGN) {
+					puts("Error 1");
+					return -1;
+				}
+				past_token = NUMBER;
+				switch (arr_tokens[ind_start].type) {
+					case FUNC:
+						ind_start++;
+					case OPENING_BLACKET:
+						ind_start++;
+						nesting = 1;
+						while (nesting) {
+							printf("nesting = %d; ind = %d\n", nesting, ind_start);
+							switch (arr_tokens[ind_start].type) {
+								case OPENING_BLACKET:
+									nesting++;
+									break;
+								case CLOSING_BLACKET:
+									nesting--;
+									break;
+							}
+							ind_start++;
+						}
+						ind_start--;
+						break;
+				}
+				break;
+			case SIGN:
+				printf("sign ind_start = %d\n", ind_start);
+				if (past_token != NUMBER) {
+					puts("Error 2");
+					return -1;
+				}
+				past_token = SIGN;
+				break;
+			case CLOSING_BLACKET:
+				len--;
+				break;
+		}
+		len++;
+		printf("LEN = %d\n", len);
+	}
+	if (~len & 1) return -1;
+	puts("End __expression_checking()");
+	return ind_end - 1;
 }

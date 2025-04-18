@@ -7,9 +7,6 @@
 
 #include "config.h"
 
-/*
- * нужно убрать случай обработки: si n; и случай когда -.0 1---1 правильно обрабатывается
- */
 
 
 /*
@@ -235,7 +232,7 @@ __is_token(unsigned ind, unsigned ind_token)
 
 
 static char
-__data_correctness(void) //проверяет на наличие ошибок с (), реальными названифми функций и констатнт
+__data_correctness(void)
 {
 	unsigned char list_names_funcs[] = LIST_NAMES_FUNCS;
 	unsigned char list_names_constants[] = LIST_NAMES_CONSTANTS;
