@@ -150,7 +150,8 @@ __preproces(void)
 
 
 #define IS_NEGATIVE_NUMBER(ind, arr, ind_str, string) ((!ind || (arr[ind - 1].type == SIGN ||\
-			(arr[ind - 1].type == OPENING_BLACKET))) && IS_NUMBER(string[ind_str + 1]))
+			(arr[ind - 1].type == OPENING_BLACKET) || arr[ind - 1].type == SEPARATOR_IN_FUNC)) &&\
+			IS_NUMBER(string[ind_str + 1]))
 static unsigned
 __is_token(unsigned ind, unsigned ind_token)
 {

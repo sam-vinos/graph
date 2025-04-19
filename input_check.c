@@ -30,7 +30,6 @@ input_check(Token *arr_tokens)
 		free_arr_tokens(arr_tokens);
 		return 1;
 	}
-	printf("max_nesting = %d\n", max_nesting);
 	if (__main_analysis_syntax(arr_tokens, max_nesting))
 			goto ERROR_INPUT_CHECK;
 	return 0;
@@ -38,11 +37,10 @@ input_check(Token *arr_tokens)
 
 
 static int
-__get_max_nesting(Token *arr_tokens) //добавить еще функцию для проверки праивльного нахождения разделителя аргументов
+__get_max_nesting(Token *arr_tokens)
 {
 	int max_nesting = 0, nesting = 0;
-	//unsigned char number_separator = 0;
-	for (unsigned ind = 0/*, ind_func = 0*/; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
+	for (unsigned ind = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 		switch (arr_tokens[ind].type) {
 			case OPENING_BLACKET:
 				nesting++;
@@ -73,7 +71,7 @@ __get_max_nesting(Token *arr_tokens) //добавить еще функцию д
 		}
 	}
 	if (nesting) max_nesting = -1;
-	ERROR_GET_MAX_NESTING: /// нужно лишь для того что бы выйти из цикла
+	ERROR_GET_MAX_NESTING: /// нужно для того что бы выйти из цикла
 	return max_nesting;
 }
 
@@ -148,12 +146,13 @@ __main_analysis_syntax(Token *arr_tokens, int max_nesting)
 	do {
 		for (ind = 0, nesting = 0; arr_tokens[ind].type != END_ARR_TOKENS; ind++) {
 			if (nesting == max_nesting) {
-				if (ind >= 2 && arr_tokens[ind - 2].type == FUNC)
+				if (ind >= 2 && arr_tokens[ind - 2].type == FUNC) {
 					ind = __true_arg_func(arr_tokens, ind, arr_tokens[ind - 2].data.str);
-				else if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
+				} else if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
 						arr_tokens[ind].type == CONSTANT ||\
-						arr_tokens[ind].type == NUMBER_FLOAT)
+						arr_tokens[ind].type == NUMBER_FLOAT) {
 					ind = __true_syntax_expression(arr_tokens, ind);
+				}
 				if (ind == -1) {
 					//fprintf(stderr, "%s\n", "Error");
 					return 1;
@@ -212,15 +211,15 @@ __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func)
 					nesting++;
 					break;
 				case CLOSING_BLACKET:
-					nesting++;
+					nesting--;
 					break;
 			}
 		}
 		ind_end = __expression_checking(arr_tokens, ind_start, ind_end);
 		if (ind_end == -1) return -1;
 		ind_end += 2;
-
 	}
+	//puts("END ARG_FUNC");
 	return ind_end - 2;
 }
 
