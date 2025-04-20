@@ -22,6 +22,8 @@ CONFIG=config
 SOURCE_CONFIG=$(CONFIG).c
 OBG_CONFIG=$(CONFIG).o
 
+#get_polish_notation.c
+
 PROG=graph
 
 CLEAN=rm -f

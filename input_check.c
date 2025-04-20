@@ -15,7 +15,6 @@ static int __get_max_nesting(Token *arr_tokens); //так же проверяе�
 static char __is_not_true_func(Token *arr_tokens, unsigned ind);
 static char __is_not_true_separator(Token *arr_tokens, signed ind);
 static char __main_analysis_syntax(Token *arr_tokens, int max_nesting);
-
 static signed __true_arg_func(Token *arr_tokens, signed ind_start, unsigned char *name_func);
 static signed __true_syntax_expression(Token *arr_tokens, signed ind_start);
 static signed __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end);

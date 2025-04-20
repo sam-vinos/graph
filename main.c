@@ -16,8 +16,9 @@ main()
 		fprintf(stderr, "n/a\n");
 		return 1;
 	}
+	unsigned len_arr_tokens = get_len_arr_tokens(arr_tokens);
 	print_arr_tokens(arr_tokens);
-	printf("len = %u\n", get_len_arr_tokens(arr_tokens));
+	printf("len = %u\n", len_arr_tokens);
 	free_arr_tokens(arr_tokens);
 	return 0;
 }
