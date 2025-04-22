@@ -7,7 +7,11 @@
 
 #define LIST_NAMES_CONSTANTS "pi\0x\0X\0\0"
 
+#include "structs.h"
+#include "get_tokens.h"
+
 char config_check(void);
 signed char number_args_func(unsigned char *name_func);
+Token *get_copy_arr_tokens(Token *arr_tokens);
 
 #endif

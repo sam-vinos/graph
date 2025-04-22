@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "config.h"
 
@@ -60,4 +61,16 @@ number_args_func(unsigned char *name_func)
 		ind_name_funcs++;
 	}
 	return result_number;
+}
+
+
+Token *
+get_copy_arr_tokens(Token *arr_tokens)
+{
+	Token *copy_arr_tokens = (Token *)malloc(sizeof(Token) * (get_len_arr_tokens(arr_tokens) + 1));
+	unsigned ind = 0;
+	for (; arr_tokens[ind].type != END_ARR_TOKENS; ind++)
+		copy_arr_tokens[ind] = arr_tokens[ind];
+	copy_arr_tokens[ind] = arr_tokens[ind];
+	return copy_arr_tokens;
 }

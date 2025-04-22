@@ -20,18 +20,18 @@ static signed __true_syntax_expression(Token *arr_tokens, signed ind_start);
 static signed __expression_checking(Token *arr_tokens, signed ind_start, signed ind_end);
 
 
-char
+int
 input_check(Token *arr_tokens)
 {
 	int max_nesting = __get_max_nesting(arr_tokens);
 	if (max_nesting == -1) {
 		ERROR_INPUT_CHECK:
 		free_arr_tokens(arr_tokens);
-		return 1;
+		return -1;
 	}
 	if (__main_analysis_syntax(arr_tokens, max_nesting))
 			goto ERROR_INPUT_CHECK;
-	return 0;
+	return max_nesting;
 }
 
 
