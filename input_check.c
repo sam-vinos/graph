@@ -147,15 +147,10 @@ __main_analysis_syntax(Token *arr_tokens, int max_nesting)
 			if (nesting == max_nesting) {
 				if (ind >= 2 && arr_tokens[ind - 2].type == FUNC) {
 					ind = __true_arg_func(arr_tokens, ind, arr_tokens[ind - 2].data.str);
-				} else if (arr_tokens[ind].type == NUMBER || arr_tokens[ind].type == OPENING_BLACKET ||\
-						arr_tokens[ind].type == CONSTANT ||\
-						arr_tokens[ind].type == NUMBER_FLOAT) {
+				} else if (arr_tokens[ind].type != CLOSING_BLACKET) {
 					ind = __true_syntax_expression(arr_tokens, ind);
 				}
-				if (ind == -1) {
-					//fprintf(stderr, "%s\n", "Error");
-					return 1;
-				}
+				if (ind == -1) return 1;
 			}
 			switch (arr_tokens[ind].type) {
 				case OPENING_BLACKET:
