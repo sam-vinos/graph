@@ -87,7 +87,7 @@ get_tokens(void)
 }
 
 
-#define MIN_SIZE_STRING 10
+#define MIN_SIZE_STRING 20
 static void
 __input(void)
 {

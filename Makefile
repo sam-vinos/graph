@@ -49,7 +49,7 @@ $(OBG_GET_TOKENS): $(SOURCE_GET_TOKENS)
 	$(CC) $(FLAGS) -c $^
 
 $(OBG_INPUT_CHECK): $(SOURCE_INPUT_CHECK)
-	$(CC) $(FLAGS) -c $^
+	$(CC) $(FLAGS) -c $^ -DTEST
 
 $(OBG_CONFIG): $(SOURCE_CONFIG)
 	$(CC) $(FLAGS) -c $^

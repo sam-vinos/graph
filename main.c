@@ -19,7 +19,7 @@ main()
 		return 1;
 	}
 
-	arr_tokens = get_polich_notation(arr_tokens, max_nesting);
+	//arr_tokens = get_polich_notation(arr_tokens, max_nesting);
 
 	unsigned len_arr_tokens = get_len_arr_tokens(arr_tokens);
 	print_arr_tokens(arr_tokens);
